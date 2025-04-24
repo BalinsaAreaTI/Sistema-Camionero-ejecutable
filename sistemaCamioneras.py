@@ -168,47 +168,31 @@ class WorkerThread(QThread):
         while True:
             try:
                 if serialIndicador is None or not serialIndicador.is_open:
-                    serialIndicador = serial.Serial(
-                        port=COMINDICADOR1,
-                        baudrate=9600,
-                        timeout=1,
-                        bytesize=serial.EIGHTBITS,
-                        parity=serial.PARITY_NONE,
-                        stopbits=serial.STOPBITS_ONE
-                    )
-
-                buffer = "" 
-
-                while serialIndicador.is_open:
-                    if serialIndicador.in_waiting > 0:
-                        data = serialIndicador.read(serialIndicador.in_waiting)
-                        try:
-                            buffer += data.decode('utf-8', errors='ignore')
-
-                            while " " in buffer:
-                                segment, buffer = buffer.split(" ", 1)
-
-                                if segment.strip():
-                                    segment = segment[:-10] if len(segment) > 10 else ""
-                                    self.update_peso.emit(segment)
-                                    self.update_baliza.emit(segment)
-                                    self.update_estado.emit("1")
-                        except UnicodeDecodeError:
-                            print(f"Error al decodificar: {data}")
-
-            except serial.SerialException as e:
-                # print(f"Error en la conexión serial: {e}")
-                time.sleep(1)
+                    serialIndicador = serial.Serial(COMINDICADOR1, baudrate=9600, timeout=1, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE)
+                
+                import re  # Asegúrate de importar esto al inicio del archivo
+                
+                result = serialIndicador.readline().decode('utf-8', errors='ignore').strip()
+                
+                # Buscar una cadena que termine en "kg"
+                match = re.search(r'(wn\d+\.\d{2}kg)', result)
+                
+                if match:
+                    clean_result = match.group(1)  # Extrae el texto limpio
+                    self.update_peso.emit(clean_result)
+                    self.update_baliza.emit(clean_result)
+                    self.update_estado.emit("1")
+                else:
+                    self.update_peso.emit("-----")
+                    self.update_baliza.emit("0.00")
+                    self.update_estado.emit("0")
+                    
             except Exception as e:
-                print(f"Error inesperado: {e}")
+                # print("WT IN: " + str(e))
                 time.sleep(1)
-            finally:
+                # Cerrar la conexión serial si hay una excepción
                 if serialIndicador is not None and serialIndicador.is_open:
                     serialIndicador.close()
-
-                self.update_peso.emit("-----")
-                self.update_baliza.emit("0.00")
-                self.update_estado.emit("0")
     
     def stop(self):
         print("Thread Stopped")
