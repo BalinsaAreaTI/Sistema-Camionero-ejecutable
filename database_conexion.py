@@ -1,14 +1,18 @@
 from datetime import datetime
 import pyodbc
 import os
+
 class Conectar():
     def __init__(self):
     # ============================ Conexion para Access
 
-        ruta_base_datos = os.path.join("Base_de_Datos", "bd_sistema_camioneras.accdb")
-        # self.conexionsqlaccess = pyodbc.connect(r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\Jhonf Huertas\Desktop\Sistema_Escritorio_Municipalidad-main\Base_de_Datos\bd_sistema_camioneras.accdb;')
+        ruta_base_datos = r"C:/Base_de_Datos/bd_sistema_camioneras.accdb"
+
+        if not os.path.exists(ruta_base_datos):
+            raise FileNotFoundError(f"No se encontró la base de datos en la ruta: {ruta_base_datos}")
+
         self.conexionsqlaccess = pyodbc.connect(
-        r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + ruta_base_datos + ';'
+            r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + ruta_base_datos + ';'
         )
     # ============================
     def db_consulta_puertos_default(self):
