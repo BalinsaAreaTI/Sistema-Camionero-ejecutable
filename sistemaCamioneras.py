@@ -402,7 +402,7 @@ class Inicio(QMainWindow):
         self.ui.btnCerrar.clicked.connect(self.fn_cerrarPrograma)
         self.ui.btnminimizar.clicked.connect(self.fn_minimizarPrograma)
         self.ui.btnNuevoTicket.clicked.connect(self.fn_btn_ingreso)
-        self.ui.btnBuscarTara.clicked.connect(self.fn_traer_tara)
+        #self.ui.btnBuscarTara.clicked.connect(self.fn_traer_tara)
         self.ui.btnCerrarFrmAlerta.clicked.connect(self.fn_btnCerrarFrmAlerta)
         self.ui.btnEditBruto.clicked.connect(self.fn_btnEditBruto)
         self.ui.btnEditTara.clicked.connect(self.fn_btnEditTara)
@@ -467,9 +467,22 @@ class Inicio(QMainWindow):
                 
     def fn_entradaPesoBruto(self):
         texto = self.ui.txtPesoBruto.text()
+        #print("texto de la cadena",texto)
         cursor_position = self.ui.txtPesoBruto.cursorPosition()  # Guardar la posición del cursor
-        texto_valido = ''.join(filter(str.isdigit, texto))
-        self.ui.txtPesoBruto.setText(texto_valido)
+
+        nuevo_texto = ""
+        punto_encontrado = False
+    
+        for char in texto:
+            if char.isdigit():
+                nuevo_texto += char
+            elif char == '.' and not punto_encontrado:
+                nuevo_texto += char
+                punto_encontrado = True
+    
+        #print("texto valido", nuevo_texto)
+    
+        self.ui.txtPesoBruto.setText(nuevo_texto)
         self.ui.txtPesoBruto.setCursorPosition(cursor_position)
         
         self.fn_calcular_peso_neto()
@@ -760,8 +773,11 @@ class Inicio(QMainWindow):
         pesoBruto = self.ui.txtPesoBruto.text().strip()
         pesoTara = self.ui.txtPesoTara.text().strip()
         
+        #print("peso bruto: ",pesoBruto,"peso Tara: ",pesoTara)
+
         try:
-            pesoNeto = int(pesoBruto)-int(pesoTara)
+            pesoNeto = float(pesoBruto)-float(pesoTara)
+            #print("PESO neto: ",pesoNeto)
             if float(pesoNeto) < 0:
                 pesoNeto = int(pesoNeto)*-1
             self.ui.txtPesoNeto.setText(str(pesoNeto))
@@ -1232,7 +1248,7 @@ class Inicio(QMainWindow):
 
     def obtener_datos_pesadas(self, fecha_desde, fecha_hasta):
         try:
-            if not self.conexion.conexionsqlaccess:
+            if not self.conexion.conexionsql:
                 print("La conexión a la base de datos no está disponible.")
                 return None
 
@@ -1248,10 +1264,10 @@ class Inicio(QMainWindow):
                     producto, observacion, 
                     fechaPesajeFinal, horaPesajeFinal
                 FROM tbl_pesadas 
-                WHERE fechaPesajeInicial BETWEEN ? AND ?
+                WHERE fechaPesajeInicial BETWEEN %s AND %s
             """
 
-            with self.conexion.conexionsqlaccess.cursor() as cursor:
+            with self.conexion.conexionsql.cursor() as cursor:
                 cursor.execute(query, (fecha_desde_texto, fecha_hasta_texto))
                 resultados = cursor.fetchall()
 

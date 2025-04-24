@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:\Balinsa\Sistema_Escritorio_Municipalidad-main\View\Principal.ui'
+# Form implementation generated from reading ui file 'c:\Users\USER\Documents\trabajo\bainsa\camionera\Sistema-Camionero-ejecutable\View\Principal.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -885,7 +885,7 @@ class Ui_viewInicioApp(object):
         self.lblTicket.setStyleSheet("color: rgb(255, 255, 255);")
         self.lblTicket.setObjectName("lblTicket")
         self.frmAlerta = QtWidgets.QFrame(self.centralwidget)
-        self.frmAlerta.setGeometry(QtCore.QRect(333, 159, 700, 450))
+        self.frmAlerta.setGeometry(QtCore.QRect(333, 160, 700, 450))
         self.frmAlerta.setStyleSheet("#frmAlerta{background-color: rgb(255, 255, 255);\n"
 "color: rgb(0, 0, 0);\n"
 "border:none;\n"
@@ -1156,7 +1156,7 @@ class Ui_viewInicioApp(object):
         _translate = QtCore.QCoreApplication.translate
         viewInicioApp.setWindowTitle(_translate("viewInicioApp", "MainWindow"))
         self.lblFechaHora.setText(_translate("viewInicioApp", "24 de Noviembre del 2023 - 12:00:00"))
-        self.label.setText(_translate("viewInicioApp", "© 2024 Leonardo Garcia & Jhon Huertas"))
+        self.label.setText(_translate("viewInicioApp", "<html><head/><body><p>© 2024-25 Indrustias  Balinsa</p></body></html>"))
         self.lblEstadoIndicador.setText(_translate("viewInicioApp", "En Linea"))
         self.lblPesoIndicador.setText(_translate("viewInicioApp", "-----"))
         self.lblNroTicket.setText(_translate("viewInicioApp", "Nro Ticket :"))
