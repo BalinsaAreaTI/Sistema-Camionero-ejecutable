@@ -16,7 +16,7 @@ from View.Ui_inicioSistema import Ui_MainWindow
 import sistemaCamioneras
 
 # Importación de Base de Datos
-from database_conexion import Conectar # El archivo database_conexion.py
+from Base_de_Datos.database_conexion import Conectar # El archivo database_conexion.py
 
 # ===============================
 # Creación de la Clase Principal

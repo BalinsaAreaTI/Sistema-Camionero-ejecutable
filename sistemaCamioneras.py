@@ -29,7 +29,7 @@ from View.ui_Principal import Ui_viewInicioApp # La clase Ui_MainWindow del arch
 from View.Ui_modal_reporte import Ui_modal_reporte
 
 # Importación de Base de Datos
-from database_conexion import Conectar # El archivo database_conexion.py
+from Base_de_Datos.database_conexion import Conectar # El archivo database_conexion.py
 
 # Puertos COM
 COM1 = ""
