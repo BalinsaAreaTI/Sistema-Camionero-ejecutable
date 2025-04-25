@@ -3,6 +3,7 @@ from datetime import datetime
 import mysql.connector
 import os
 
+<<<<<<< HEAD:Base_de_Datos/database_conexion.py
 hostLocal = "127.0.0.1"
 userLocal = "root"
 passwordLocal = ""
@@ -16,15 +17,28 @@ passwordServer = os.getenv("PASSWORDSERVERBD")
 databaseServer = os.getenv("DATABASESERVER")
 portServer = os.getenv("PORTSERVERDB")
 
+=======
+>>>>>>> 2bf2e7943f91ae2dd53c53b7fadfa556c605c504:database_conexion.py
 class Conectar():
     def __init__(self):
     # ============================ Conexion para Access
 
+<<<<<<< HEAD:Base_de_Datos/database_conexion.py
         # ruta_base_datos = os.path.join("Base_de_Datos", "bd_sistema_camioneras.accdb")
         # # self.conexionsql = pyodbc.connect(r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\Jhonf Huertas\Desktop\Sistema_Escritorio_Municipalidad-main\Base_de_Datos\bd_sistema_camioneras.accdb;')
         # self.conexionsql = pyodbc.connect(
         # r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + ruta_base_datos + ';'
         # )
+=======
+        ruta_base_datos = r"C:/Base_de_Datos/bd_sistema_camioneras.accdb"
+
+        if not os.path.exists(ruta_base_datos):
+            raise FileNotFoundError(f"No se encontró la base de datos en la ruta: {ruta_base_datos}")
+
+        self.conexionsqlaccess = pyodbc.connect(
+            r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + ruta_base_datos + ';'
+        )
+>>>>>>> 2bf2e7943f91ae2dd53c53b7fadfa556c605c504:database_conexion.py
     # ============================
     # ============================== Conexion para MySQl laragon =========== 
         if hostServer and userServer and passwordServer and databaseServer and portServer:
