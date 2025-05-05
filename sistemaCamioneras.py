@@ -62,7 +62,7 @@ class PDFViewer(QtWidgets.QWidget):
     def init_ui(self):
         self.setWindowTitle('VISTA PREVIA DEL DOCUMENTO')
         self.setWindowIcon(QtGui.QIcon("Resources/icono.png"))
-        self.resize(300, 600)
+        self.resize(673, 600)
         self.center_window()
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -126,32 +126,48 @@ class PDFViewer(QtWidgets.QWidget):
             lbl.setPixmap(QtGui.QPixmap.fromImage(img))
             self.vbox.addWidget(lbl)
     
-    def print_pdf(self):
-        printer_name = win32print.GetDefaultPrinter()
-        print(f"Imprimiendo en: {printer_name}")
+    # def print_pdf(self):
+    #     printer_name = win32print.GetDefaultPrinter()
+    #     print(f"Imprimiendo en: {printer_name}")
 
-        try:
-            hprinter = win32print.OpenPrinter(printer_name)
-            pdc = win32ui.CreateDC()
-            pdc.CreatePrinterDC(printer_name)
-            pdc.StartDoc("Impresion PDF Directa")
-            pdc.StartPage()
+    #     try:
+    #         hprinter = win32print.OpenPrinter(printer_name)
+    #         pdc = win32ui.CreateDC()
+    #         pdc.CreatePrinterDC(printer_name)
+    #         pdc.StartDoc("Impresion PDF Directa")
+    #         pdc.StartPage()
 
             
-            try:
-                print("Enviando PDF a la impresora...")
-                os.startfile(self.file_path, "print")
-                print("PDF enviado correctamente a la impresora.")
-            except Exception as e:
-                print(f"Error al enviar el archivo PDF a la impresora: {e}")
-            finally:
-                pdc.EndPage()
-                pdc.EndDoc()
+    #         try:
+    #             print("Enviando PDF a la impresora...")
+    #             os.startfile(self.file_path, "print")
+    #             print("PDF enviado correctamente a la impresora.")
+    #         except Exception as e:
+    #             print(f"Error al enviar el archivo PDF a la impresora: {e}")
+    #         finally:
+    #             pdc.EndPage()
+    #             pdc.EndDoc()
 
+    #     except Exception as e:
+    #         print(f"Error al intentar imprimir: {e}")
+    #     finally:
+    #         win32print.ClosePrinter(hprinter)
+
+    def print_pdf(self):
+        try:
+            printer_name = nombreImpresora
+            printer_handle = win32print.OpenPrinter(printer_name)
+            win32api.ShellExecute(
+                0,
+                "print",
+                self.file_path,
+                f'/d:"{printer_name}"',
+                ".",
+                0
+            )
+            win32print.ClosePrinter(printer_handle)
         except Exception as e:
-            print(f"Error al intentar imprimir: {e}")
-        finally:
-            win32print.ClosePrinter(hprinter)
+            print("Error al imprimir el PDF:", e)
 
 """Creamos hilo para la ejecución en segundo plano del Indicador , de esta forma
 evitamos que la aplicación se detenga por la lectura constante """
@@ -175,12 +191,16 @@ class WorkerThread(QThread):
                 result = serialIndicador.readline().decode('utf-8', errors='ignore').strip()
                 
                 # Buscar una cadena que termine en "kg"
-                match = re.search(r'(wn\d+\.\d{2}kg)', result)
+                #match = re.search(r'(wn\d+\.\d{2}kg)', result)
+                #match = re.search(r'(wn\d+(?:\.\d{1,2})?kg)', result)
+                match = re.search(r'(\d+)\s*KG', result.upper())
+
                 
                 if match:
-                    clean_result = match.group(1)  # Extrae el texto limpio
-                    self.update_peso.emit(clean_result)
-                    self.update_baliza.emit(clean_result)
+                    numero = str(int(match.group(1)))
+                    #clean_result = match.group(1)  # Extrae el texto limpio
+                    self.update_peso.emit(numero)
+                    self.update_baliza.emit(numero)
                     self.update_estado.emit("1")
                 else:
                     self.update_peso.emit("-----")
@@ -776,7 +796,7 @@ class Inicio(QMainWindow):
         #print("peso bruto: ",pesoBruto,"peso Tara: ",pesoTara)
 
         try:
-            pesoNeto = float(pesoBruto)-float(pesoTara)
+            pesoNeto = int(pesoBruto)-int(pesoTara)
             #print("PESO neto: ",pesoNeto)
             if float(pesoNeto) < 0:
                 pesoNeto = int(pesoNeto)*-1
@@ -1108,62 +1128,134 @@ class Inicio(QMainWindow):
 
         self.crear_pdf(datos)
         
+    # def crear_pdf(self, datos, filename="output.pdf"):
+    #     # Definir el tamaño de página 80mm x 297mm en puntos (1mm = 2.83465 puntos)
+    #     ancho_rollo = 227.54  # 80mm
+    #     alto_rollo = 841.89   # 297mm
+
+    #     # Crear el canvas con el tamaño de la página de rollo
+    #     c = canvas.Canvas(filename, pagesize=(ancho_rollo, alto_rollo))
+
+    #     ejeY = 10  # Se empieza a imprimir desde el margen superior
+
+    #     # Ajustar márgenes y la ubicación del contenido según las dimensiones de la impresora
+    #     c.setFont("Helvetica-Bold", 10)
+    #     c.drawString(60, alto_rollo - ejeY, f"{nombreEmpresa}")
+    #     ejeY += 20
+    #     c.setFont("Helvetica", 8)
+    #     c.drawString(8, alto_rollo - ejeY, f"{ubicacionEmpresa}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"R.U.C. : {rucEmpresa}")
+        
+    #     ejeY += 30
+    #     c.setFont("Helvetica-Bold", 10)
+    #     c.drawString(60, alto_rollo - ejeY, f"Nro Ticket : {datos['txtNroTicket']}")
+    #     ejeY += 20
+    #     c.setFont("Helvetica", 8)
+    #     c.drawString(8, alto_rollo - ejeY, f"Placa Vehicular  : {datos['txtPlacaVehicular']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Conductor          : {datos['txtConductor']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Transportista     : {datos['txtTransportista']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Razon Social     : {datos['txtCliente']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Producto            : {datos['txtProducto']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Observacion      : {datos['txtObservacion']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Fecha Inicial      : {datos['txtFechaInicial']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Hora Inicial : {datos['txtHoraInicial']}")
+    #     ejeY += 20 
+    #     c.drawString(8, alto_rollo - ejeY, f"Fecha Final       : {datos['txtFechaFinal']}")
+    #     ejeY += 20
+    #     c.drawString(8, alto_rollo - ejeY, f"Hora Final  : {datos['txtHoraFinal']}")
+    #     ejeY += 20 
+    #     c.setFont("Helvetica-Bold", 9)
+    #     c.drawString(8, alto_rollo - ejeY, f"PESO BRUTO : {datos['txtPesoBruto']}")
+    #     ejeY += 20 
+    #     c.drawString(8, alto_rollo - ejeY, f"PESO TARA   : {datos['txtPesoTara']}")
+    #     ejeY += 20 
+    #     # Dibujar el cuadrado y el texto "PESO NETO"
+    #     c.drawString(8, alto_rollo - ejeY, f"PESO NETO  : {datos['txtPesoNeto']}")
+    
+    #     # Guardar el archivo PDF
+    #     c.save()
+
+    #     # Previsualizar el PDF generado
+    #     self.previsualizar_pdf(filename)
+
     def crear_pdf(self, datos, filename="output.pdf"):
-        # Definir el tamaño de página 80mm x 297mm en puntos (1mm = 2.83465 puntos)
-        ancho_rollo = 227.54  # 80mm
-        alto_rollo = 841.89   # 297mm
+        c = canvas.Canvas(filename, pagesize=letter)
+        width, height = letter
+        
+        ejeY = 0
 
-        # Crear el canvas con el tamaño de la página de rollo
-        c = canvas.Canvas(filename, pagesize=(ancho_rollo, alto_rollo))
-
-        ejeY = 10  # Se empieza a imprimir desde el margen superior
-
-        # Ajustar márgenes y la ubicación del contenido según las dimensiones de la impresora
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(60, alto_rollo - ejeY, f"{nombreEmpresa}")
+        ejeY += 40
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(50, height - ejeY, f"{nombreEmpresa}")
         ejeY += 20
-        c.setFont("Helvetica", 8)
-        c.drawString(8, alto_rollo - ejeY, f"{ubicacionEmpresa}")
+        c.setFont("Helvetica", 12)
+        c.drawString(50, height - ejeY, f"{ubicacionEmpresa}")
         ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"R.U.C. : {rucEmpresa}")
+        c.drawString(50, height - ejeY, f"R.U.C. : {rucEmpresa}")
         
         ejeY += 30
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(60, alto_rollo - ejeY, f"Nro Ticket : {datos['txtNroTicket']}")
-        ejeY += 20
-        c.setFont("Helvetica", 8)
-        c.drawString(8, alto_rollo - ejeY, f"Placa Vehicular  : {datos['txtPlacaVehicular']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Conductor          : {datos['txtConductor']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Transportista     : {datos['txtTransportista']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Razon Social     : {datos['txtCliente']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Producto            : {datos['txtProducto']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Observacion      : {datos['txtObservacion']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Fecha Inicial      : {datos['txtFechaInicial']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Hora Inicial : {datos['txtHoraInicial']}")
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(450, height - ejeY, f"Nro Ticket : {datos['txtNroTicket']}")
+        ejeY += 30
+        c.setFont("Helvetica", 12)
+        c.drawString(50, height - ejeY, f"Placa Vehicular  : {datos['txtPlacaVehicular']}")
+        # c.drawString(300, height - ejeY, f"Carreta : {datos['txtCarreta']}")  
         ejeY += 20 
-        c.drawString(8, alto_rollo - ejeY, f"Fecha Final       : {datos['txtFechaFinal']}")
-        ejeY += 20
-        c.drawString(8, alto_rollo - ejeY, f"Hora Final  : {datos['txtHoraFinal']}")
+        c.drawString(50, height - ejeY, f"Conductor          : {datos['txtConductor']}")
         ejeY += 20 
-        c.setFont("Helvetica-Bold", 9)
-        c.drawString(8, alto_rollo - ejeY, f"PESO BRUTO : {datos['txtPesoBruto']}")
+        c.drawString(50, height - ejeY, f"Transportista     : {datos['txtTransportista']}")
         ejeY += 20 
-        c.drawString(8, alto_rollo - ejeY, f"PESO TARA   : {datos['txtPesoTara']}")
+        c.drawString(50, height - ejeY, f"Razon Social     : {datos['txtCliente']}")
+        ejeY += 20 
+        c.drawString(50, height - ejeY, f"Producto            : {datos['txtProducto']}")
+        ejeY += 20 
+        # c.drawString(50, height - ejeY, f"Precio                : {datos['txtPrecio']}")
+        # ejeY += 20 
+        c.drawString(50, height - ejeY, f"Observacion      : {datos['txtObservacion']}")
+        c.line(50, height - ejeY - 10, width - 50, height - ejeY - 10)
+        ejeY += 30 
+        c.drawString(50, height - ejeY, f"Fecha Inicial      : {datos['txtFechaInicial']}")
+        c.drawString(300, height - ejeY, f"Hora Inicial : {datos['txtHoraInicial']}")
+        ejeY += 20 
+        c.drawString(50, height - ejeY, f"Fecha Final       : {datos['txtFechaFinal']}")
+        c.drawString(300, height - ejeY, f"Hora Final  : {datos['txtHoraFinal']}")
+        ejeY += 30 
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(50, height - ejeY, f"PESO BRUTO : {datos['txtPesoBruto']}")
+        ejeY += 20 
+        c.drawString(50, height - ejeY, f"PESO TARA   : {datos['txtPesoTara']}")
         ejeY += 20 
         # Dibujar el cuadrado y el texto "PESO NETO"
-        c.drawString(8, alto_rollo - ejeY, f"PESO NETO  : {datos['txtPesoNeto']}")
-    
-        # Guardar el archivo PDF
+        c.drawString(55, height - ejeY, f"PESO NETO  : {datos['txtPesoNeto']}")
+        neto_text_width = c.stringWidth(f"PESO NETO  : {datos['txtPesoNeto']}", "Helvetica-Bold", 14)
+        rect_x = 50
+        rect_y = height - ejeY - 5
+        rect_width = neto_text_width + 10
+        rect_height = 20
+        c.rect(rect_x, rect_y, rect_width, rect_height, stroke=1, fill=0)
+        
+        try:
+            imagen_path = "resources/logoEmpresa.png"
+            imagen_x = 410
+            imagen_y = height - 400
+            imagen_ancho = 150
+            imagen_alto = 75
+
+            # Dibujar la imagen en el lienzo
+            c.drawImage(imagen_path, imagen_x, imagen_y, width=imagen_ancho, height=imagen_alto)
+        except Exception as e:
+            pass
+
         c.save()
 
-        # Previsualizar el PDF generado
         self.previsualizar_pdf(filename)
         
     def previsualizar_pdf(self, filename):
@@ -1264,7 +1356,9 @@ class Inicio(QMainWindow):
                     producto, observacion, 
                     fechaPesajeFinal, horaPesajeFinal
                 FROM tbl_pesadas 
-                WHERE fechaPesajeInicial BETWEEN %s AND %s
+                WHERE STR_TO_DATE(fechaPesajeInicial, '%d-%m-%Y') 
+                BETWEEN STR_TO_DATE(%s, '%d-%m-%Y') 
+                AND STR_TO_DATE(%s, '%d-%m-%Y');
             """
 
             with self.conexion.conexionsql.cursor() as cursor:
