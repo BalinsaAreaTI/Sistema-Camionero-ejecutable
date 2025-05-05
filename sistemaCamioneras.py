@@ -157,6 +157,7 @@ class PDFViewer(QtWidgets.QWidget):
         try:
             printer_name = nombreImpresora
             printer_handle = win32print.OpenPrinter(printer_name)
+            print("nombre de la imopresora ",printer_name )
             win32api.ShellExecute(
                 0,
                 "print",
@@ -1128,63 +1129,6 @@ class Inicio(QMainWindow):
 
         self.crear_pdf(datos)
         
-    # def crear_pdf(self, datos, filename="output.pdf"):
-    #     # Definir el tamaño de página 80mm x 297mm en puntos (1mm = 2.83465 puntos)
-    #     ancho_rollo = 227.54  # 80mm
-    #     alto_rollo = 841.89   # 297mm
-
-    #     # Crear el canvas con el tamaño de la página de rollo
-    #     c = canvas.Canvas(filename, pagesize=(ancho_rollo, alto_rollo))
-
-    #     ejeY = 10  # Se empieza a imprimir desde el margen superior
-
-    #     # Ajustar márgenes y la ubicación del contenido según las dimensiones de la impresora
-    #     c.setFont("Helvetica-Bold", 10)
-    #     c.drawString(60, alto_rollo - ejeY, f"{nombreEmpresa}")
-    #     ejeY += 20
-    #     c.setFont("Helvetica", 8)
-    #     c.drawString(8, alto_rollo - ejeY, f"{ubicacionEmpresa}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"R.U.C. : {rucEmpresa}")
-        
-    #     ejeY += 30
-    #     c.setFont("Helvetica-Bold", 10)
-    #     c.drawString(60, alto_rollo - ejeY, f"Nro Ticket : {datos['txtNroTicket']}")
-    #     ejeY += 20
-    #     c.setFont("Helvetica", 8)
-    #     c.drawString(8, alto_rollo - ejeY, f"Placa Vehicular  : {datos['txtPlacaVehicular']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Conductor          : {datos['txtConductor']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Transportista     : {datos['txtTransportista']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Razon Social     : {datos['txtCliente']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Producto            : {datos['txtProducto']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Observacion      : {datos['txtObservacion']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Fecha Inicial      : {datos['txtFechaInicial']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Hora Inicial : {datos['txtHoraInicial']}")
-    #     ejeY += 20 
-    #     c.drawString(8, alto_rollo - ejeY, f"Fecha Final       : {datos['txtFechaFinal']}")
-    #     ejeY += 20
-    #     c.drawString(8, alto_rollo - ejeY, f"Hora Final  : {datos['txtHoraFinal']}")
-    #     ejeY += 20 
-    #     c.setFont("Helvetica-Bold", 9)
-    #     c.drawString(8, alto_rollo - ejeY, f"PESO BRUTO : {datos['txtPesoBruto']}")
-    #     ejeY += 20 
-    #     c.drawString(8, alto_rollo - ejeY, f"PESO TARA   : {datos['txtPesoTara']}")
-    #     ejeY += 20 
-    #     # Dibujar el cuadrado y el texto "PESO NETO"
-    #     c.drawString(8, alto_rollo - ejeY, f"PESO NETO  : {datos['txtPesoNeto']}")
-    
-    #     # Guardar el archivo PDF
-    #     c.save()
-
-    #     # Previsualizar el PDF generado
-    #     self.previsualizar_pdf(filename)
 
     def crear_pdf(self, datos, filename="output.pdf"):
         c = canvas.Canvas(filename, pagesize=letter)
@@ -1242,17 +1186,17 @@ class Inicio(QMainWindow):
         rect_height = 20
         c.rect(rect_x, rect_y, rect_width, rect_height, stroke=1, fill=0)
         
-        try:
-            imagen_path = "resources/logoEmpresa.png"
-            imagen_x = 410
-            imagen_y = height - 400
-            imagen_ancho = 150
-            imagen_alto = 75
+        # try:
+        #     imagen_path = "resources/logoEmpresa.png"
+        #     imagen_x = 410
+        #     imagen_y = height - 400
+        #     imagen_ancho = 150
+        #     imagen_alto = 75
 
-            # Dibujar la imagen en el lienzo
-            c.drawImage(imagen_path, imagen_x, imagen_y, width=imagen_ancho, height=imagen_alto)
-        except Exception as e:
-            pass
+        #     # Dibujar la imagen en el lienzo
+        #     c.drawImage(imagen_path, imagen_x, imagen_y, width=imagen_ancho, height=imagen_alto)
+        # except Exception as e:
+        #     pass
 
         c.save()
 
